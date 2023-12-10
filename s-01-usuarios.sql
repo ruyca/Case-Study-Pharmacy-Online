@@ -9,7 +9,7 @@ connect sys as sysdba
 PROMPT Creando rol_admin
 create role rol_admin;
 grant create session, create table, create view, create sequence,
-  create procedure
+  create procedure, create any directory
   to rol_admin;
   
 PROMPT Creando rol_invitado
@@ -17,11 +17,11 @@ create role rol_invitado;
 grant create session to rol_invitado;
 
 PROMPT Creando usuario cs_proy_invitado
-create user cs_proy_invitado identified by usuario quota unlimited
+create user cs_proy_invitado identified by pf_usuario quota unlimited
   on users;
 grant rol_invitado to cs_proy_invitado; 
 
 PROMPT Creando usuario cs_proy_admin
-create user cs_proy_admin identified by admin quota unlimited
+create user cs_proy_admin identified by pf_admin quota unlimited
   on users;
 grant rol_admin to cs_proy_admin; 

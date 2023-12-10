@@ -4,7 +4,7 @@
 
 
 /*
-'CENTRO_OPERACION'
+'CENTRO_OPERACION' 
 COMENTARIOS: 
 - Se puede tener una farmacia y un almacen
 - Una oficina no puede vender. 
@@ -30,7 +30,7 @@ create table centro_operacion(
   telefono number(12,0) not null,
   constraint centro_operacion_clave_uk unique(clave),
   constraint centro_operacion_clave_chk check (
-    (es_farmacia = 1 and es_almacen = 1 and es_remoto = 0 and 
+    (es_farmacia = 1 and es_almacen = 1 and es_oficina = 0 and 
       substr(clave,1,2)='FM') or
     (es_farmacia = 1 and es_almacen = 0 and es_oficina = 0 and
       substr(clave,1,2)='FF') or
@@ -46,6 +46,7 @@ create table centro_operacion(
 'EMPLEADO'
 COMENTARIOS: 
 - un empleado puede ser normal o supervisor
+- uso de default on null sysdate
 RESTRICCIONES: 
   -RFC: formado por PPMNaammdd###, donde:
     -PP -> iniciales apellido paterno
@@ -55,7 +56,7 @@ RESTRICCIONES:
 */
 create table empleado(
   empleado_id number(10,0) constraint empleado_pk primary key,
-  fecha_ingreso date not null, 
+  fecha_ingreso date default on null sysdate, 
   rfc varchar2(13) not null, 
   nombre varchar2(20) not null, 
   apellido_paterno varchar2(20) not null, 
@@ -123,7 +124,7 @@ RESTRICCIONES
 create table almacen(
   almacen_id number(10,0) constraint almacen_centro_operacion_fk 
     references centro_operacion(centro_id),
-  archivo binary null,
+  archivo blob null,
   almacen_contigencia_id number(10,0),
   tipo_almacen varchar2(1) not null,
   constraint almacen_id_pk primary key(almacen_id),
@@ -135,22 +136,27 @@ create table almacen(
 
 
 /*
-'OFICINA'
+'OFICINA'* 
 COMENTARIOS:
-- 
+- Clave se construye con una columna virtual:
+  - CL-10 caracteres del nombre + 4 caracteres de oficina_id:
+    - CL-COYOACANLB0001
+- aumentar a varchar2(50) para nombre
 RESTRICCIONES
   - Clave es unique
 */
 create table oficina(
   oficina_id number(10,0) constraint oficina_centro_operacion_fk
     references centro_operacion(centro_id),
-  nombre varchar2(20) not null, 
-  clave varchar2(20) not null, 
+  nombre varchar2(50) not null, 
+  clave generated always as(
+    'CL-' ||
+    substr(nombre,1,10) ||
+    to_char(oficina_id, 'fm0000')
+  ) virtual, 
   telefono number(12) not null,
   constraint oficina_id_pk primary key(oficina_id)
 );
-
-
 
 
 /*
@@ -210,9 +216,12 @@ create table presentacion(
 
 
 /*
-'MEDICAMENTO_PRESENTACION'
+'MEDICAMENTO_PRESENTACION' ** 
 COMENTARIOS: 
 - indica todas las presentaciones para un medicamento dado.
+- agregue costo unitario
+CONSTRAINTS:
+  - costo unitario entre 1 y 50,000
 */
 create table medicamento_presentacion(
   med_pres_id number(10,0) 
@@ -220,10 +229,14 @@ create table medicamento_presentacion(
     primary key,
   medicamento_id number(10,0) not null,
   presentacion_id number(10,0) not null, 
+  costo_unitario number(10,0) not null,
   constraint medicamento_presentacion_medicamento_fk
     foreign key(medicamento_id) references medicamento(medicamento_id),
   constraint medicamento_presentacion_presentacion_fk
-    foreign key(presentacion_id) references presentacion(presentacion_id)
+    foreign key(presentacion_id) references presentacion(presentacion_id),
+  constraint medicamento_presentacion_costo_unitario_chk check(
+    costo_unitario between 1 and 50000
+  )
 );
 
 /*
@@ -411,13 +424,14 @@ COMENTARIOS:
 - Indica el medicamento_presentacion y su cantidad
   que se pidieron 
 - quitar medicamento id
+- uso de default on null
 RESTRICCIONES:
   - CANTIDAD: entre 1 y 20
 */
 create table detalles_pedido(
   detalle_id number(10,0), 
   pedido_id number(10,0),
-  cantidad number(3,0) not null, 
+  cantidad number(3,0) default on null 1, 
   med_pres_id number(10,0) not null, 
   farmacia_id number(10,0) not null, 
   constraint detalles_pedido_pedido_fk 
