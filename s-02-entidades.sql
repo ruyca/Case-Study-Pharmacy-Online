@@ -4,10 +4,12 @@
 
 
 /*
-'CENTRO_OPERACION' 
+'CENTRO_OPERACION' **
 COMENTARIOS: 
 - Se puede tener una farmacia y un almacen
 - Una oficina no puede vender. 
+- CAMBIAR LATITUD Y LONGITUD
+- CAMBIAR TELEFONO A VARCHAR2
 RESTRICCIONES: 
   - CLAVE: formado por xx####, donde xx corresponde al caso: 
     - FM -> si es farmacia y almacen
@@ -25,9 +27,9 @@ create table centro_operacion(
   es_almacen number(1,0) not null, 
   es_oficina number(1,0) not null, 
   clave varchar2(6) not null, 
-  latitud number(15,4) not null, 
-  longitud number(15,4) not null, 
-  telefono number(12,0) not null,
+  latitud number(15,6) not null, 
+  longitud number(15,6) not null, 
+  telefono varchar2(12) not null,
   constraint centro_operacion_clave_uk unique(clave),
   constraint centro_operacion_clave_chk check (
     (es_farmacia = 1 and es_almacen = 1 and es_oficina = 0 and 
@@ -114,10 +116,11 @@ create table farmacia(
 
 
 /*
-'ALMACEN'
+'ALMACEN'*
 COMENTARIOS:
 - Tres tipos: Convencional (C), Compacto (M), Dinamico (D)
 - almacen de contigencia es otro almacen que puede auxiliar
+- CAMBIAR ARCHIVO A NULL
 RESTRICCIONES
   - tipo_almacen: 'C' o 'M' o 'D'
 */
@@ -296,6 +299,7 @@ create table detalle_movimiento(
 COMENTARIOS:
 - indica el medicamento_presentacion y su cantidad existente
 - se especifica en que farmacia se tiene
+- quitar medicamento_id
 RESTRICCIONES:
 - 2fks, quitar medicamento_id
 */
@@ -315,9 +319,9 @@ create table inventario(
 
 
 /*
-'CLIENTE'
+'CLIENTE'*
 COMENTARIOS: 
--
+- CAMBIAR TELEFONO A VARCHAR2(12)
 RESTRICCIONES:
 - CURP: tiene el formato NNPM##############
   - NN -> Dos iniciales de nombree
@@ -333,7 +337,7 @@ RESTRICCIONES:
 */
 create table cliente(
   cliente_id number(10,0) constraint cliente_pk primary key,
-  telefono number(12,0) not null, 
+  telefono varchar2(12) not null, 
   rfc varchar2(13) not null, 
   curp varchar(18), 
   direccion varchar2(150) not null, 
