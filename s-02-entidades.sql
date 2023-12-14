@@ -139,12 +139,13 @@ create table almacen(
 
 
 /*
-'OFICINA'* 
+'OFICINA'* *
 COMENTARIOS:
 - Clave se construye con una columna virtual:
   - CL-10 caracteres del nombre + 4 caracteres de oficina_id:
     - CL-COYOACANLB0001
-- aumentar a varchar2(50) para nombre
+- AUMENTAR a varchar2(50) para nombre
+- TELEFONO ahora es varchar2(12)
 RESTRICCIONES
   - Clave es unique
 */
@@ -157,7 +158,7 @@ create table oficina(
     substr(nombre,1,10) ||
     to_char(oficina_id, 'fm0000')
   ) virtual, 
-  telefono number(12) not null,
+  telefono varchar2(12) not null,
   constraint oficina_id_pk primary key(oficina_id)
 );
 
@@ -274,7 +275,7 @@ create table movimiento(
 COMENTARIOS:
 - especifica que y cuanto se movio (medicamentos y sus pres.)
 - cambiar nombre de pk
-- cambiar a solo med_pres_id
+- cambiar a solo med_pres_id (quitar medicamento_id)
 RESTRICCIONES:
 - 2 fks
 -
@@ -477,15 +478,16 @@ create table historico_status_pedido(
 
 
 /*
-'UBICACION_PEDIDO'
+'UBICACION_PEDIDO'*
 COMENTARIOS:
 - Registra la ubicacoin de un pedido en tiempo real
+- CAMBIAR LATITUD Y LONGITUD A NUMBER(15,6)
 */
 create table ubicacion_pedido(
   ubicacion_pedido_id number(10,0),
   fecha_ubicacion date not null, 
-  latitud number(15,4) not null, 
-  longitud number(15,4) not null,
+  latitud number(15,6) not null, 
+  longitud number(15,6) not null,
   pedido_id number(10,0) not null,
   constraint ubicacion_pedido_pk primary key(ubicacion_pedido_id),
   constraint ubicacion_pedido_pedido_fk 

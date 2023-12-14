@@ -7,6 +7,7 @@ Autor: Ruy Cabello @ruyca
 '''
 
 from random import randint
+from random import sample
 
 
 # sustancia_activa_seq: 1, 2, ...
@@ -350,7 +351,7 @@ def generar_empleados():
 	s = "insert into\
 	empleado(empleado_id, fecha_ingreso, rfc, nombre, apellido_paterno, apellido_materno, empleado_supervisor_id,centro_id)\
 	values(empleado_seq.nextval, to_date('09/12/2023','dd/mm/yyyy'), {}, {}, {}, {}, {}, {});"
-	centros = [5000,5005,5010,5015,5020,5025]
+	centros = [5000,5005,5010,5015,5020,5025] # 2 farmacia, 2 almacen, 2 oficina
 	emp_sup = [500, 501, 502, 503, 504, 505]
 	with open('s-09-carga-inicial.sql', 'a') as f:
 		f.write('\n--INSERTANDO EN EMPLEADOS\n')
@@ -370,7 +371,115 @@ def generar_empleados():
 			c_id = centros[randint(0, len(centros)-1)]
 			f.write(s.format(f"\'{rfc}\'",f"\'{n[0]}\'",f"\'{n[1]}\'",f"\'{n[2]}\'",e_s,c_id))
 			f.write("\n")
+		
+def generar_inventario():
+	farmacia_id = [5000,5005]
+	s = "insert into inventario(inventario_id, existencias, farmacia_id, med_pres_id)\
+	values(inventario_seq.nextval, {}, {}, {});"
+	
+	# med_pres_seq : 1, 2, 3, ...
+	cont = 1
+	with open('s-09-carga-inicial.sql', 'a') as f:
+		f.write('\n--INSERTANDO EN INVENTARIO\n')
+		for i in range(2):
+			for key, val in MEDICAMENTO_PRESENTACION.items():
+				for pres in val:
+					ext = randint(0, 150)
+					f.write(s.format(str(ext),str(farmacia_id[i]),str(cont)))
+					f.write('\n')
+					cont += 1
+			cont = 1
+		
+		
+def generar_farmacias():
+	inventario = []
+	centros = [5000, 5005]
+	apertura = ["101223", "111223"]
+	c = ["3X8", "0AP"]
+	f = "PHO"
+	gerentes_id =[501, 502]
+	sucursales = ["villa-hermosa/norte", "coyoacan-alto/sur"]
+	p = "https://www.pharmacyonline.com/sucursales/"
+	s = "insert into farmacia(farmacia_id, pagina_web, rfc_fiscal, empleado_gerente_id)\
+	values({},{},{},{});"
+	with open('s-09-carga-inicial.sql', 'a') as f:
+		f.write('\n--INSERTANDO EN FARMACIAS\n')
+		for i in range(2):
+			ce = centros[i]
+			rfc = "PHO" + apertura[i] + c[i]
+			f.write(s.format(ce, f"\'{p+sucursales[i]}\'",f"\'{rfc}\'",gerentes_id[i]))
+			f.write('\n')
 			
+			
+def generar_almacenes():
+	s = "insert into almacen(almacen_id, almacen_contigencia) values({}, {});"
+	centros = [5010, 5015] # el primer centro es el centro de contigencia del segundo
+	with open('s-09-carga-inicial.sql', 'a') as f:
+		f.write("\n--INSERTANDO EN ALMACENES\n")
+		f.write(s.format(centros[0], "NULL"))
+		f.write('\n')
+		f.write(s.format(centros[1], centros[0]))
+		f.write('\n')
+		
+def generar_oficinas():
+	s = "insert into oficina(oficina_id, nombre, telefono)\
+	values({}, {}, {});"
+	centros = [5020, 5025]
+	nombres = ["Oficina Villa Real", "Oficina Castores A.C"]
+	with open('s-09-carga-inicial.sql', 'a') as f:
+		f.write("\n--INSERTANDO EN OFICINA\n")
+		for i in range(2):
+			c = centros[i]
+			n = nombres[i]
+			t = generar_telefono()
+			f.write(s.format(c,f"\'{n}\'",f"\'{t}\'"))
+			f.write('\n')
+			
+def generar_movimiento():
+	s = "insert into movimiento(movimiento_id, fecha_movimiento, tipo_movimiento,almacen_centro_id,\
+	empleado_responsable_id) values(movimiento_seq.nextval, {}, {}, {}, {});"
+	# Los centros_id que son almacenes son: 5010, 5015
+	with open('s-09-carga-inicial.sql', 'a') as f:
+		f.write('\n--INSERTANDO EN MOVIMIENTO\n')
+		f1 = f"to_date('12-12-2023', 'dd-mm-yyyy')"
+		f2 = f"to_date('15-12-2023', 'dd-mm-yyyy')"
+		f.write(s.format(f1,f"\'E\'", str(5010), randint(500, 510))) # mov 1
+		f.write('\n')
+		f.write(s.format(f2,f"\'S\'", str(5010), randint(500, 510))) # mov 2
+		f.write('\n')
+		f.write(s.format(f1,f"\'E\'", str(5015), randint(500, 510))) # mov 3
+		f.write('\n')
+		f.write(s.format(f2,f"\'S\'", str(5015), randint(500, 510))) # mov 4
+		f.write('\n')
+		
+def generar_detalle_movimiento():
+	s = "insert into detalle_movimiento(detalle_movimiento_id, cantidad, movimiento_id,\
+	med_pres_id) values(detalle_movimiento_seq.nextval, {}, {}, {});"
+	# med_pres_id : 1, 2, 3, ... , 30
+	# generamos 4 movimientos: 1,2,3,4
+	presentaciones_med = [i for i in range(1,31)]
+	centro = 5010
+	with open('s-09-carga-inicial.sql', 'a') as f:
+		f.write('\n--INSERTANDO EN DETALLE_MOVIMIENTO\n')
+		for i in range(1,5):
+			mov = randint(5,10) # se mueven entre 5 y 10 medicinas por mov
+			smple = sample(presentaciones_med, mov) # lista de medicamentos_pres a mover
+			for med_pres in smple:
+				cantidad = randint(10,50) # se mueven entre 10 y 50 med_pres
+				f.write(s.format(cantidad, str(i), str(med_pres)))
+				f.write('\n')
+			
+def generar_pedidos():
+	# creamos 3 pedidos
+	s = "insert into pedido(pedido_id, fecha_status_actual, folio, fecha_pedido, \
+	importe_total, cliente_id, empleado_id, status_id) values(pedido_seq.nextval, {}, \
+	{}, {}, {}, {}, {}, {});"
+	# cliente 1000, 1001, 1002
+	with open('s-09-carga-inicial.sql', 'a') as f:
+		for i in range(3):
+			pass
+			
+	
 		
 def run():
 	generar_sustancia_activa() 
@@ -383,8 +492,13 @@ def run():
 	generar_status_pedido()
 	generar_centro_operacion()
 	generar_empleados()
-
-
+	generar_farmacias() 
+	generar_almacenes()
+	generar_oficinas()
+	generar_inventario()
+	generar_movimiento()
+	generar_detalle_movimiento()
+	generar_pedidos() # generamos tambien historico, ubicacion, detalles
 
 if __name__ == '__main__':
 	run()
