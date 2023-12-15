@@ -3,6 +3,9 @@
 -- @Descripcion: Creacion de las entidades, sus atributos y restricciones
 
 
+PROMPT conectano usuario admin
+connect cn_proy_admin/pf_admin;
+
 /*
 'CENTRO_OPERACION'
 COMENTARIOS: 
@@ -54,6 +57,7 @@ RESTRICCIONES:
     -N -> inicial nombre
     - UNIQUE
 */
+-- insert into	empleado(empleado_id, fecha_ingreso, rfc, nombre, apellido_paterno, apellido_materno, empleado_supervisor_id,centro_id)	values(empleado_seq.nextval, to_date('09/12/2023','dd/mm/yyyy'), 'OLJJ50098301', 'JESSICA', 'OLIVARES', 'JARA', NULL, 5000);
 create table empleado(
   empleado_id number(10,0) constraint empleado_pk primary key,
   fecha_ingreso date default on null sysdate, 
@@ -65,8 +69,8 @@ create table empleado(
   centro_id number(10,0),
   constraint empleado_rfc_chk check(
     (substr(rfc,1,2) = substr(apellido_paterno,1,2)) and
-    (substr(rfc,2,1) = substr(apellido_materno,1,1)) and
-    (substr(rfc,3,1) = substr(nombre,1,1))
+    (substr(rfc,3,1) = substr(apellido_materno,1,1)) and
+    (substr(rfc,4,1) = substr(nombre,1,1))
   ),
   constraint empleado_centro_id_fk foreign key(centro_id)
     references centro_operacion(centro_id),
@@ -325,6 +329,7 @@ RESTRICCIONES:
   -N -> inicial nombre
   - UNIQUE
 */
+--insert into cliente values(cliente_seq.nextval, '553168088', 'PECS730218920', NULL, 'Calle Pasta 19, Colonia Viena', 'SALMA', 'PEREZ', 'CUEVA', 'FERNANDA450@yahoo.com');
 create table cliente(
   cliente_id number(10,0) constraint cliente_pk primary key,
   telefono varchar2(12) not null, 
@@ -334,11 +339,11 @@ create table cliente(
   nombre varchar2(20) not null, 
   apellido_paterno varchar2(20) not null,
   apellido_materno varchar2(20) not null,
-  correo varchar2(20) not null, 
+  correo varchar2(40) not null, 
   constraint cliente_rfc_chk check(
     (substr(rfc,1,2) = substr(apellido_paterno,1,2)) and
-    (substr(rfc,2,1) = substr(apellido_materno,1,1)) and
-    (substr(rfc,3,1) = substr(nombre,1,1))
+    (substr(rfc,3,1) = substr(apellido_materno,1,1)) and
+    (substr(rfc,4,1) = substr(nombre,1,1))
   ),
   constraint cliente_rfc_uk unique(rfc),
   constraint cliente_curp_uk unique(curp),
@@ -360,7 +365,7 @@ create table datos_tarjeta(
   tarjeta_id number(10,0) constraint datos_tarjeta primary key, 
   num_tarjeta varchar2(16) not null, 
   mes_expiracion varchar2(2) not null, 
-  anio_expiracion varchar(2) not null, 
+  anio_expiracion varchar2(4) not null, 
   cliente_id number(10,0) constraint datos_tarjeta_cliente_fk
     references cliente(cliente_id)
 );
@@ -394,6 +399,7 @@ create table pedido(
   pedido_id number(10,0) constraint pedido_pk primary key,
   fecha_status_actual date not null,
   folio varchar2(13) not null, 
+  fecha_pedido date not null,
   importe_total number(10,0) not null, 
   cliente_id number(10,0) not null, 
   empleado_id number(10,0) not null, 

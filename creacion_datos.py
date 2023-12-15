@@ -60,12 +60,26 @@ MEDICAMENTO_NOMBRE = {
 					  214:["Higrotona"]
 					 }
 					 
-# medicamento_presentacion_seq: 1, 2, 3, ...					 
+# medicamento_presentacion_seq: 1, 2, 3, ...	
+# 1 -> 100
+# 2 -> 101
+# 3 -> 102
+# 4 -> 103
+# 5 -> 104
+# 6 -> 105
+# 7 -> 106
+# 8 -> 107
+# 9 -> 108
+# 10 -> 109
+# 11 -> 110
+# 12 -> 111
+# 13 -> 112
+# 14 -> 113			 
 MEDICAMENTO_PRESENTACION = {
-	200: [1,2], 201:[3,4,1,5,6,7,8], 202:[9],
-	203: [3,10], 204:[3,1,11], 205:[11], 206:[12],
-	207:[13], 208:[13], 209:[11,14], 210:[8,11],
-	211:[13], 212:[1,5], 213:[1,5,6], 214:[1]
+	200: [100,101], 201:[102,103,100,104,105,106,107], 202:[108],
+	203: [102,109], 204:[102,100,110], 205:[110], 206:[111],
+	207:[112], 208:[112], 209:[110,113], 210:[107,110],
+	211:[112], 212:[100,104], 213:[100,104,105], 214:[100]
 }
 						  
 # presentacion_seq: 100, 101, 102, ...
@@ -196,7 +210,7 @@ def generar_rfc(nombre_completo):
 	dia = str(randint(1,28))
 	r = str(randint(100, 999))
 	
-	rfc = nombre_completo[1][:2] + nombre_completo[1][0] + nombre_completo[0][0]
+	rfc = nombre_completo[1][:2] + nombre_completo[2][0] + nombre_completo[0][0]
 	rfc += anio + mes + dia + r
 	
 	return rfc
@@ -254,13 +268,14 @@ def generar_presentaciones():
 			f.write('\n')
 	
 def generar_med_pres():
-	s = "insert into medicamento_presentacion(med_pres_id, medicamento_id, presentacion_id)\
-	  values(medicamento_presentacion_seq.nextval, {}, {});"
+	s = "insert into medicamento_presentacion(med_pres_id, medicamento_id, presentacion_id, costo_unitario)\
+	  values(medicamento_presentacion_seq.nextval, {}, {}, {});"
 	with open('s-09-carga-inicial.sql', 'a') as f:
 		f.write('\n--INSERTANDO EN MEDICAMENTO_PRESENTACION\n')
 		for key, val in MEDICAMENTO_PRESENTACION.items():
 			for presentacion in val:
-				f.write(s.format(key, presentacion))
+				costo = randint(50,500)
+				f.write(s.format(key, presentacion, costo))
 				f.write('\n')
 
 def generar_cliente():
@@ -287,7 +302,7 @@ def generar_cliente():
 			
 def generar_datos_tarjeta():
 	s = "insert into datos_tarjeta(tarjeta_id, num_tarjeta, mes_expiracion, anio_expiracion, cliente_id)\
-		values(datos_tarjeta_seq.nextval, {}, to_date('{}','mm'), to_date('{}','yyyy'), {});"
+		values(datos_tarjeta_seq.nextval, {}, {}, {}, {});"
 	cl_id = 1000
 	with open('s-09-carga-inicial.sql', 'a') as f:
 		f.write('\n--INSERTANDO EN DATOS_TARJETA\n')
@@ -296,12 +311,12 @@ def generar_datos_tarjeta():
 			mes = mes_aleatorio()
 			anio = str(randint(2010, 2035))
 			# cliente_seq: 1000, 1001, ...
-			f.write(s.format(num_t, mes, anio, str(cl_id)))
+			f.write(s.format(num_t, mes, str(anio), str(cl_id)))
 			f.write('\n')
 			cl_id += 1
 			
 def generar_status_pedido():
-	s = "insert into status_pedido(status_id, descripcion, clave)\
+	s = "insert into status_pedido(status_id, clave, descripcion)\
 	values(status_pedido_seq.nextval, {}, {});"
 	estados = {'CAPTURADO':'El pedido se ha registrado de manera exitosa y esta espera de envio.', # 1
 			   'EN TRANSITO': 'El pedido esta en curso para ser entregado al cliente.', # 2
@@ -432,13 +447,13 @@ def generar_farmacias():
 			
 			
 def generar_almacenes():
-	s = "insert into almacen(almacen_id, almacen_contigencia) values({}, {});"
+	s = "insert into almacen(almacen_id, almacen_contigencia_id, tipo_almacen) values({}, {}, {});"
 	centros = [5010, 5015] # el primer centro es el centro de contigencia del segundo
 	with open('s-09-carga-inicial.sql', 'a') as f:
 		f.write("\n--INSERTANDO EN ALMACENES\n")
-		f.write(s.format(centros[0], "NULL"))
+		f.write(s.format(centros[0], "NULL", f"\'C\'"))
 		f.write('\n')
-		f.write(s.format(centros[1], centros[0]))
+		f.write(s.format(centros[1], centros[0], f"\'M\'"))
 		f.write('\n')
 		
 def generar_oficinas():
@@ -456,7 +471,7 @@ def generar_oficinas():
 			f.write('\n')
 			
 def generar_movimiento():
-	s = "insert into movimiento(movimiento_id, fecha_movimiento, tipo_movimiento,almacen_centro_id,\
+	s = "insert into movimiento(movimiento_id, fecha_movimiento, tipo_movimiento,almacen_id,\
 	empleado_responsable_id) values(movimiento_seq.nextval, {}, {}, {}, {});"
 	# Los centros_id que son almacenes son: 5010, 5015
 	with open('s-09-carga-inicial.sql', 'a') as f:
@@ -497,19 +512,19 @@ def generar_pedidos():
 	# cliente 1000, 1001, 1002
 	with open('s-09-carga-inicial.sql', 'a') as f:
 		f.write('\n--INSERTANDO EN PEDIDO\n')
-		f.write(s.format(f"to_date('14-12-2023 18:00:00', 'dd-mm-yyyy HH24:MM:SS')",
+		f.write(s.format(f"to_date('14-12-2023 18:00:00', 'dd-mm-yyyy HH24:MI:SS')",
 				f"\'A1B2C3LM09AL3\'",
-				f"to_date('10-12-2023 21:00:00', 'dd-mm-yyyy HH24:MM:SS')",
+				f"to_date('10-12-2023 21:00:00', 'dd-mm-yyyy HH24:MI:SS')",
 				str(2070), str(1000), str(507), str(3)))
 		f.write('\n')
-		f.write(s.format(f"to_date('11-12-2023 15:00:00', 'dd-mm-yyyy HH24:MM:SS')",
+		f.write(s.format(f"to_date('11-12-2023 15:00:00', 'dd-mm-yyyy HH24:MI:SS')",
 				f"\'KKK2C4LO09AL3\'",
-				f"to_date('11-12-2023 22:00:00', 'dd-mm-yyyy HH24:MM:SS')",
+				f"to_date('11-12-2023 22:00:00', 'dd-mm-yyyy HH24:MI:SS')",
 				str(3000), str(1001), str(508), str(1)))
 		f.write('\n')
-		f.write(s.format(f"to_date('12-12-2023 12:30:00', 'dd-mm-yyyy HH24:MM:SS')",
+		f.write(s.format(f"to_date('12-12-2023 12:30:00', 'dd-mm-yyyy HH24:MI:SS')",
 				f"\'ZYZ0069O09AL3\'",
-				f"to_date('12-12-2023 13:00:00', 'dd-mm-yyyy HH24:MM:SS')",
+				f"to_date('12-12-2023 13:00:00', 'dd-mm-yyyy HH24:MI:SS')",
 				str(150), str(1002), str(507), str(5)))
 		f.write('\n')
 				
@@ -519,22 +534,22 @@ def generar_historico():
 	{}, {}, {});"
 	with open('s-09-carga-inicial.sql', 'a') as f:
 		f.write('\n--INSERTANDO EN HISTORICO_STATUS_PEDIDO\n')
-		f.write(s.format(f"to_date('10-12-2023 21:00:00', 'HH24:MM:SS')",
+		f.write(s.format(f"to_date('10-12-2023 21:00:00', 'dd-mm-yyyy HH24:MI:SS')",
 						str(1), str(5000)))	
 		f.write('\n')
-		f.write(s.format(f"to_date('11-12-2023 12:00:00', 'HH24:MM:SS')",
+		f.write(s.format(f"to_date('11-12-2023 12:00:00', 'dd-mm-yyyy HH24:MI:SS')",
 						str(2), str(5000)))	
 		f.write('\n')
-		f.write(s.format(f"to_date('11-12-2023 15:00:00', 'HH24:MM:SS')",
+		f.write(s.format(f"to_date('11-12-2023 15:00:00', 'dd-mm-yyyy HH24:MI:SS')",
 						str(1), str(5001)))	
 		f.write('\n')				
-		f.write(s.format(f"to_date('14-12-2023 17:48:00', 'HH24:MM:SS')",
+		f.write(s.format(f"to_date('14-12-2023 17:48:00', 'dd-mm-yyyy HH24:MI:SS')",
 						str(3), str(5000)))	
 		f.write('\n')						
-		f.write(s.format(f"to_date('12-12-2023 12:30:00', 'HH24:MM:SS')",
+		f.write(s.format(f"to_date('12-12-2023 12:30:00', 'dd-mm-yyyy HH24:MI:SS')",
 						str(1), str(5002)))
 		f.write('\n')
-		f.write(s.format(f"to_date('12-12-2023 13:00:00', 'HH24:MM:SS')",
+		f.write(s.format(f"to_date('12-12-2023 13:00:00', 'dd-mm-yyyy HH24:MI:SS')",
 						str(5), str(5002)))	
 		f.write('\n')
 						
@@ -547,7 +562,7 @@ def generar_detalles_pedido():
 	presentaciones_med = [i for i in range(1,31)]
 	with open('s-09-carga-inicial.sql', 'a') as f:
 		f.write('\n--INSERTANDO EN DETALLES_PEDIDO\n')
-		for i in range(1, 4):
+		for i in range(5000, 5003):
 			mov = randint(1,5) # se mueven entre 1 y 5 medicinas por mov
 			smple = sample(presentaciones_med, mov) # lista de medicamentos_pres a mover
 			for med_pres in smple:
@@ -569,7 +584,7 @@ def generar_ubicacion_pedido():
 		for cont,coord in enumerate(viaje_coord):
 			lat = coord[0]
 			lon = coord[1]
-			hora = f"to_date('14-12-2023 17:{minu}:00', 'dd-mm-yyyy hh24:mm:ss')"
+			hora = f"to_date('14-12-2023 17:{minu}:00', 'dd-mm-yyyy hh24:mi:ss')"
 			f.write(s.format(hora, lat, lon))
 			f.write('\n')
 			

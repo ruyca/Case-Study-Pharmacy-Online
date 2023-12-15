@@ -3,6 +3,8 @@
 -- @Descripcion: codigo para creacion de todas las secuencias del caso 
 --               de estudio
 
+connect cn_proy_admin/pf_admin;
+
 
 -- DATOS_TARJETA
 create sequence datos_tarjeta_seq
