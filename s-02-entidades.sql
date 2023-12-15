@@ -1,15 +1,13 @@
 -- @Autores: Ruy Cabello @ruyca, Carolina Sotelo @carolinanolso
--- @Fehca creacion: 09/12/2023
+-- @Fecha creacion: 09/12/2023
 -- @Descripcion: Creacion de las entidades, sus atributos y restricciones
 
 
 /*
-'CENTRO_OPERACION' **
+'CENTRO_OPERACION'
 COMENTARIOS: 
 - Se puede tener una farmacia y un almacen
-- Una oficina no puede vender. 
-- CAMBIAR LATITUD Y LONGITUD
-- CAMBIAR TELEFONO A VARCHAR2
+- Una oficina no puede vender.
 RESTRICCIONES: 
   - CLAVE: formado por xx####, donde xx corresponde al caso: 
     - FM -> si es farmacia y almacen
@@ -116,11 +114,10 @@ create table farmacia(
 
 
 /*
-'ALMACEN'*
+'ALMACEN'
 COMENTARIOS:
 - Tres tipos: Convencional (C), Compacto (M), Dinamico (D)
 - almacen de contigencia es otro almacen que puede auxiliar
-- CAMBIAR ARCHIVO A NULL
 RESTRICCIONES
   - tipo_almacen: 'C' o 'M' o 'D'
 */
@@ -139,13 +136,11 @@ create table almacen(
 
 
 /*
-'OFICINA'* *
+'OFICINA'
 COMENTARIOS:
 - Clave se construye con una columna virtual:
   - CL-10 caracteres del nombre + 4 caracteres de oficina_id:
     - CL-COYOACANLB0001
-- AUMENTAR a varchar2(50) para nombre
-- TELEFONO ahora es varchar2(12)
 RESTRICCIONES
   - Clave es unique
 */
@@ -220,10 +215,9 @@ create table presentacion(
 
 
 /*
-'MEDICAMENTO_PRESENTACION' ** 
+'MEDICAMENTO_PRESENTACION'
 COMENTARIOS: 
 - indica todas las presentaciones para un medicamento dado.
-- agregue costo unitario
 CONSTRAINTS:
   - costo unitario entre 1 y 50,000
 */
@@ -271,11 +265,9 @@ create table movimiento(
 
 
 /*
-'DETALLE_MOVIMIENTO'*
+'DETALLE_MOVIMIENTO'
 COMENTARIOS:
 - especifica que y cuanto se movio (medicamentos y sus pres.)
-- cambiar nombre de pk
-- cambiar a solo med_pres_id (quitar medicamento_id)
 RESTRICCIONES:
 - 2 fks
 -
@@ -296,15 +288,13 @@ create table detalle_movimiento(
 
 
 /*
-'INVENTARIO'*
+'INVENTARIO'
 COMENTARIOS:
 - indica el medicamento_presentacion y su cantidad existente
 - se especifica en que farmacia se tiene
-- quitar medicamento_id
 RESTRICCIONES:
-- 2fks, quitar medicamento_id
+- 2fks
 */
-
 create table inventario(
   inventario_id number(10,0) constraint inventario_pk
     primary key,
@@ -320,9 +310,8 @@ create table inventario(
 
 
 /*
-'CLIENTE'*
+'CLIENTE'
 COMENTARIOS: 
-- CAMBIAR TELEFONO A VARCHAR2(12)
 RESTRICCIONES:
 - CURP: tiene el formato NNPM##############
   - NN -> Dos iniciales de nombree
@@ -361,7 +350,7 @@ create table cliente(
 );
 
 /*
-'DATOS_TARJETA'**
+'DATOS_TARJETA'
 COMENTARIOS:
 - Un cliente solo puede registrar una tarjeta
 RESTRICCIONES:
@@ -394,10 +383,9 @@ create table status_pedido(
 
 
 /*
-'PEDIDO'** 
+'PEDIDO'
 COMENTARIOS:
 - Un mismo pedido puede ser surtido por varias farmacias
-- Cambiar fecha_pedido
 RESTRICCIONES:
   - FOLIO: debe de ser unique
   - IMPORTE_TOTAL: entre 50 y 100000 pesos
@@ -424,11 +412,10 @@ create table pedido(
 
 
 /*
-'DETALLES_PEDIDO'*
+'DETALLES_PEDIDO'
 COMENTARIOS:
 - Indica el medicamento_presentacion y su cantidad
   que se pidieron 
-- quitar medicamento id
 - uso de default on null
 RESTRICCIONES:
   - CANTIDAD: entre 1 y 20
@@ -478,10 +465,9 @@ create table historico_status_pedido(
 
 
 /*
-'UBICACION_PEDIDO'*
+'UBICACION_PEDIDO'
 COMENTARIOS:
-- Registra la ubicacoin de un pedido en tiempo real
-- CAMBIAR LATITUD Y LONGITUD A NUMBER(15,6)
+- Registra la ubicacion de un pedido en tiempo real
 */
 create table ubicacion_pedido(
   ubicacion_pedido_id number(10,0),
