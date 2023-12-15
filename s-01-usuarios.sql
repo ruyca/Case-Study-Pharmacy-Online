@@ -9,7 +9,8 @@ connect sys as sysdba
 PROMPT Creando rol_admin
 create role rol_admin;
 grant create session, create table, create view, create sequence,
-  create procedure, create any directory, create synonym
+  create procedure, create any directory, create synonym, 
+  create trigger
   to rol_admin;
   
 PROMPT Creando rol_invitado

@@ -384,8 +384,8 @@ def generar_centro_operacion():
 def generar_empleados():
 	# Generamos 20 empleados
 	s = "insert into\
-	empleado(empleado_id, fecha_ingreso, rfc, nombre, apellido_paterno, apellido_materno, empleado_supervisor_id,centro_id)\
-	values(empleado_seq.nextval, to_date('09/12/2023','dd/mm/yyyy'), {}, {}, {}, {}, {}, {});"
+	empleado(empleado_id, fecha_ingreso, rfc, nombre, apellido_paterno, apellido_materno, empleado_supervisor_id,centro_id, \
+	salario) values(empleado_seq.nextval, to_date('09/12/2023','dd/mm/yyyy'), {}, {}, {}, {}, {}, {}, {});"
 	centros = [5000,5005,5010,5015,5020,5025] # 2 farmacia, 2 almacen, 2 oficina
 	emp_sup = [500, 501, 502, 503, 504, 505]
 	with open('s-09-carga-inicial.sql', 'a') as f:
@@ -396,7 +396,8 @@ def generar_empleados():
 			rfc = generar_rfc(n)
 			e_s = 'NULL'
 			c_id = centros[i]
-			f.write(s.format(f"\'{rfc}\'",f"\'{n[0]}\'",f"\'{n[1]}\'",f"\'{n[2]}\'",e_s,c_id))
+			sal = randint(20000,30000);
+			f.write(s.format(f"\'{rfc}\'",f"\'{n[0]}\'",f"\'{n[1]}\'",f"\'{n[2]}\'",e_s,c_id, str(sal) ))
 			f.write("\n")
 		# empleados regulares
 		for i in range(14):
@@ -404,7 +405,8 @@ def generar_empleados():
 			rfc = generar_rfc(n)
 			e_s = emp_sup[randint(0, len(emp_sup)-1)]
 			c_id = centros[randint(0, len(centros)-1)]
-			f.write(s.format(f"\'{rfc}\'",f"\'{n[0]}\'",f"\'{n[1]}\'",f"\'{n[2]}\'",e_s,c_id))
+			sal = randint(7000,15000)
+			f.write(s.format(f"\'{rfc}\'",f"\'{n[0]}\'",f"\'{n[1]}\'",f"\'{n[2]}\'",e_s,c_id, str(sal)))
 			f.write("\n")
 		
 def generar_inventario():

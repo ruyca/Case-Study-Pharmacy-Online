@@ -56,6 +56,7 @@ RESTRICCIONES:
     -M -> inicial apellido materno
     -N -> inicial nombre
     - UNIQUE
+  - SALARIO: entre 6000,50000 (NUEVA)
 */
 -- insert into	empleado(empleado_id, fecha_ingreso, rfc, nombre, apellido_paterno, apellido_materno, empleado_supervisor_id,centro_id)	values(empleado_seq.nextval, to_date('09/12/2023','dd/mm/yyyy'), 'OLJJ50098301', 'JESSICA', 'OLIVARES', 'JARA', NULL, 5000);
 create table empleado(
@@ -67,6 +68,7 @@ create table empleado(
   apellido_materno varchar2(20) not null, 
   empleado_supervisor_id number(10,0),
   centro_id number(10,0),
+  salario number(8,2),
   constraint empleado_rfc_chk check(
     (substr(rfc,1,2) = substr(apellido_paterno,1,2)) and
     (substr(rfc,3,1) = substr(apellido_materno,1,1)) and
@@ -76,7 +78,8 @@ create table empleado(
     references centro_operacion(centro_id),
   constraint empleado_supervisor_empleado_id_fk 
     foreign key(empleado_supervisor_id) references empleado(empleado_id),
-  constraint empleado_rfc_uk unique(rfc)
+  constraint empleado_rfc_uk unique(rfc),
+  constraint empleado_salario_chk check (salario between 6000 and 50000)
 );
 
 
