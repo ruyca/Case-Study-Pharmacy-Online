@@ -140,6 +140,26 @@ COORDENADAS = [
 	[19.429611, 99.190278], [19.490778, 99.103778]
 ]
 
+viaje_coord = [			
+      	[-99.15607157658494,19.34338476218326],
+        [-99.15407022810727,19.34154284605598],
+        [-99.15182155258056,19.33930941008235],
+        [-99.15016788430847,19.33731660645429],
+        [-99.15072927826211,19.33534622547683], 
+        [-99.15295236108634,19.33438897494079],
+        [-99.15644817047662,19.33513520305427],
+        [-99.16146810322113,19.33538678253029],
+        [-99.16603612832765,19.33567721959386],
+        [-99.17231423680987,19.33598863045948],
+        [-99.17591849822617,19.33625972052518],
+        [-99.1772456587865,19.33374388046209],
+        [-99.17831268434857,19.33342628917257],
+        [-99.17963098468068,19.33103010029522],
+        [-99.1822695533242,19.33091142439965],
+        [-99.1835888362079,19.33085207221867], 
+        [-99.18490811813268,19.33079271054894]
+]
+
 def mes_aleatorio():
 	m = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
 	return m[randint(0, 11)]
@@ -283,11 +303,11 @@ def generar_datos_tarjeta():
 def generar_status_pedido():
 	s = "insert into status_pedido(status_id, descripcion, clave)\
 	values(status_pedido_seq.nextval, {}, {});"
-	estados = {'CAPTURADO':'El pedido se ha registrado de manera exitosa y esta espera de envio.',
-			   'EN TRANSITO': 'El pedido esta en curso para ser entregado al cliente.',
-			   'ENTREGADO': 'El cliente recibio el pedido y este fue aceptado.',
-			   'DEVUELTO': 'El cliente encontro algun error con el pedido y fue devuelto',
-			   'CANCELADO':'Ocurrio algun error que ocasiono que se cancelara el pedido'}
+	estados = {'CAPTURADO':'El pedido se ha registrado de manera exitosa y esta espera de envio.', # 1
+			   'EN TRANSITO': 'El pedido esta en curso para ser entregado al cliente.', # 2
+			   'ENTREGADO': 'El cliente recibio el pedido y este fue aceptado.', # 3
+			   'DEVUELTO': 'El cliente encontro algun error con el pedido y fue devuelto', # 4
+			   'CANCELADO':'Ocurrio algun error que ocasiono que se cancelara el pedido'} # 5
 			   
 	with open('s-09-carga-inicial.sql', 'a') as f: 
 		f.write('\n--INSERTANDO EN STATUS_PEDIDO\n')
@@ -476,11 +496,91 @@ def generar_pedidos():
 	{}, {}, {}, {}, {}, {});"
 	# cliente 1000, 1001, 1002
 	with open('s-09-carga-inicial.sql', 'a') as f:
-		for i in range(3):
-			pass
-			
+		f.write('\n--INSERTANDO EN PEDIDO\n')
+		f.write(s.format(f"to_date('14-12-2023 18:00:00', 'dd-mm-yyyy HH24:MM:SS')",
+				f"\'A1B2C3LM09AL3\'",
+				f"to_date('10-12-2023 21:00:00', 'dd-mm-yyyy HH24:MM:SS')",
+				str(2070), str(1000), str(507), str(3)))
+		f.write('\n')
+		f.write(s.format(f"to_date('11-12-2023 15:00:00', 'dd-mm-yyyy HH24:MM:SS')",
+				f"\'KKK2C4LO09AL3\'",
+				f"to_date('11-12-2023 22:00:00', 'dd-mm-yyyy HH24:MM:SS')",
+				str(3000), str(1001), str(508), str(1)))
+		f.write('\n')
+		f.write(s.format(f"to_date('12-12-2023 12:30:00', 'dd-mm-yyyy HH24:MM:SS')",
+				f"\'ZYZ0069O09AL3\'",
+				f"to_date('12-12-2023 13:00:00', 'dd-mm-yyyy HH24:MM:SS')",
+				str(150), str(1002), str(507), str(5)))
+		f.write('\n')
+				
+def generar_historico():
+	s = "insert into historico_status_pedido(historico_status_pedido_id, \
+	fecha, status_id, pedido_id) values(historico_status_pedido_seq.nextval, \
+	{}, {}, {});"
+	with open('s-09-carga-inicial.sql', 'a') as f:
+		f.write('\n--INSERTANDO EN HISTORICO_STATUS_PEDIDO\n')
+		f.write(s.format(f"to_date('10-12-2023 21:00:00', 'HH24:MM:SS')",
+						str(1), str(5000)))	
+		f.write('\n')
+		f.write(s.format(f"to_date('11-12-2023 12:00:00', 'HH24:MM:SS')",
+						str(2), str(5000)))	
+		f.write('\n')
+		f.write(s.format(f"to_date('11-12-2023 15:00:00', 'HH24:MM:SS')",
+						str(1), str(5001)))	
+		f.write('\n')				
+		f.write(s.format(f"to_date('14-12-2023 17:48:00', 'HH24:MM:SS')",
+						str(3), str(5000)))	
+		f.write('\n')						
+		f.write(s.format(f"to_date('12-12-2023 12:30:00', 'HH24:MM:SS')",
+						str(1), str(5002)))
+		f.write('\n')
+		f.write(s.format(f"to_date('12-12-2023 13:00:00', 'HH24:MM:SS')",
+						str(5), str(5002)))	
+		f.write('\n')
+						
+						
+def generar_detalles_pedido():
 	
-		
+	s = "insert into detalles_pedido(detalle_id, pedido_id, cantidad, med_pres_id,\
+	farmacia_id) values(detalle_pedido_seq.nextval,{}, {}, {}, {});"
+	#5000, 5005
+	presentaciones_med = [i for i in range(1,31)]
+	with open('s-09-carga-inicial.sql', 'a') as f:
+		f.write('\n--INSERTANDO EN DETALLES_PEDIDO\n')
+		for i in range(1, 4):
+			mov = randint(1,5) # se mueven entre 1 y 5 medicinas por mov
+			smple = sample(presentaciones_med, mov) # lista de medicamentos_pres a mover
+			for med_pres in smple:
+				cantidad = randint(1,10) # se mueven entre 1 y 10 med_pres
+				farm = 5000 if randint(0,1) == 1 else 5005 # que farmacia surte
+				f.write(s.format(str(i), str(cantidad), str(med_pres), str(farm)))
+				f.write('\n')
+
+def generar_ubicacion_pedido():
+	s = "insert into ubicacion_pedido(ubicacion_pedido_id, fecha_ubicacion, \
+	latitud, longitud, pedido_id) values(ubicacion_pedido_seq.nextval, {}, {}, {}, \
+	5000);"
+	# viaje_coord
+	# se entrego 14/12/2023 a las 17:48:00
+	minu = '00'
+	
+	with open('s-09-carga-inicial.sql', 'a') as f:
+		f.write('\n--INSERTANDO EN UBICACION_PEDIDO\n')
+		for cont,coord in enumerate(viaje_coord):
+			lat = coord[0]
+			lon = coord[1]
+			hora = f"to_date('14-12-2023 17:{minu}:00', 'dd-mm-yyyy hh24:mm:ss')"
+			f.write(s.format(hora, lat, lon))
+			f.write('\n')
+			
+			minu = int(minu) + 3
+			minu = str(minu)
+			if len(minu) == 1:
+				minu = "0" + minu
+			
+			
+				
+				
 def run():
 	generar_sustancia_activa() 
 	generar_medicamento()
@@ -498,7 +598,10 @@ def run():
 	generar_inventario()
 	generar_movimiento()
 	generar_detalle_movimiento()
-	generar_pedidos() # generamos tambien historico, ubicacion, detalles
+	generar_pedidos()
+	generar_historico()
+	generar_detalles_pedido()
+	generar_ubicacion_pedido()
 
 if __name__ == '__main__':
 	run()

@@ -309,8 +309,8 @@ create table inventario(
   inventario_id number(10,0) constraint inventario_pk
     primary key,
   existencias number(10,0) not null, 
-  farmacia_id number(10,0),
-  med_pres_id number(10,0),
+  farmacia_id number(10,0) not null,
+  med_pres_id number(10,0) not null,
   constraint inventario_farmacia_fk foreign key(farmacia_id)
     references farmacia(farmacia_id), 
   constraint inventario_medicamento_presentacion_fk
@@ -486,8 +486,8 @@ COMENTARIOS:
 create table ubicacion_pedido(
   ubicacion_pedido_id number(10,0),
   fecha_ubicacion date not null, 
-  latitud number(15,6) not null, 
-  longitud number(15,6) not null,
+  latitud number(18,14) not null, 
+  longitud number(18,14) not null,
   pedido_id number(10,0) not null,
   constraint ubicacion_pedido_pk primary key(ubicacion_pedido_id),
   constraint ubicacion_pedido_pedido_fk 
