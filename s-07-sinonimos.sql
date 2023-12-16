@@ -20,8 +20,10 @@ grant select on historico_status_pedido to cn_proy_invitado;
 grant select on detalles_pedido to cn_proy_invitado;
 grant select on ubicacion_pedido to cn_proy_invitado;
 grant select on cliente to cn_proy_invitado;
+commit;
 
 PROMPT CREANDO SINONIMOS DE USUARIO
+connect sys as sysdba;
 grant create synonym to cn_proy_invitado;
 
 Prompt conectando como invitado
@@ -36,9 +38,11 @@ create or replace synonym ubicacion_pedido
   for cn_proy_admin.ubicacion_pedido;
 create or replace synonym cliente
   for cn_proy_admin.cliente;
+commit;
 
 PROMPT conectando usuario administrador
 connect cn_proy_admin/pf_admin;
+
 create or replace synonym cn_ubicacion_pedido for ubicacion_pedido;
 create or replace synonym cn_status_pedido for status_pedido;
 create or replace synonym cn_pedido for pedido;
@@ -68,7 +72,7 @@ create or replace synonym cn_empleado for empleado;
 create or replace synonym cn_sustancia_activa for sustancia_activa;
 create or replace synonym cn_movimiento for movimiento;
 create or replace synonym cn_inventario for inventario;
-
+commit;
 
 
 

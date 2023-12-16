@@ -5,6 +5,7 @@
 set serveroutput on
 declare
   v_cliente number := 1006;
+  
   v_med1 number := 11; 
   v_cant1 number := 5;
   

@@ -2,11 +2,10 @@
 -- @Fehca creacion: 10/12/2023
 -- @Descripcion: codigo para creacion de indices
 
+connect cn_proy_admin/pf_admin;
+
 -- NON UNIQUE
-create index empleado_rfc_ix on empleado(rfc);
 create index cliente_correo_ix on cliente(correo);
-create index centro_operacion_clave_ix on centro_operacion(clave);
-create index pedido_folio_ix on pedido(folio);
 
 -- FKs
 create index medicamento_nombre_med_id_ix

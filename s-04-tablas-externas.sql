@@ -11,11 +11,10 @@ create or replace directory emp_ext
   as '/unam-bd/proyecto-final/Case-Study-Pharmacy-Online/tablas_externas';
   
 --grant read, write on directory emp_ext to cs_proy_admin;
-grant read, write on directory emp_ext to proy_final_prueba; -- PRUEBAS
+grant read, write on directory emp_ext to cn_proy_admin; 
 
 prompt Conectando con usuario cs_proy_admin para crear la tabla externa
---connect cs_proy_admin/pf_admin
-connect proy_final_prueba/ruy; -- PARA PRUEBAS
+connect cn_proy_admin/pf_admin;
 
 prompt creando tabla externa
 create table emp_inicial_ext(

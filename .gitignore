@@ -4,3 +4,4 @@ s-02-entidades-TESTS.sql
 drop-tables.sql
 tablas_externas/
 testing.py
+foto-cliente.jpg

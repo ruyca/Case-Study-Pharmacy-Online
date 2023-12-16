@@ -1,3 +1,6 @@
+-- @Autores: Ruy Cabello @ruyca, Carolina Sotelo @carolinanolso
+-- @Fehca creacion: 12/12/2023
+-- @Descripcion: codigo de prueba para s-fx-get-farmacia
 
 set serveroutput on
 declare

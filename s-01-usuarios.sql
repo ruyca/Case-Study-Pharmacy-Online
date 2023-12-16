@@ -10,7 +10,7 @@ PROMPT Creando rol_admin
 create role rol_admin;
 grant create session, create table, create view, create sequence,
   create procedure, create any directory, create synonym, 
-  create trigger,  create public synonym 
+  create trigger,  create public synonym
   to rol_admin;
   
 PROMPT Creando rol_invitado
