@@ -6,7 +6,7 @@ PROMPT Borrando entidades generadas anteriormente
 connect cn_proy_admin/pf_admin; 
 @drop-tables.sql
 
-connect sys as sysdba;
+connect sys as sysdba;  
 PROMPT Borrando usuarios generados anteriormente
 drop user cn_proy_admin cascade;
 drop user cn_proy_invitado cascade;
