@@ -27,7 +27,7 @@ create or replace view v_pedido(
   p.cliente_id, d.cantidad, mp.med_pres_id, m.medicamento_id, 
   m.descripcion
 from pedido p
-join detalle_pedido d
+join detalles_pedido d
   on p.pedido_id = d.pedido_id 
 join medicamento_presentacion mp
   on mp.med_pres_id = d.med_pres_id

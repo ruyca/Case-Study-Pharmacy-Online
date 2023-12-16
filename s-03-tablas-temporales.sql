@@ -49,11 +49,8 @@ create global temporary table centro_farmacia(
 /*
 'CENTRO-ALMACEN'
 */
-create global temporary table centro_farmacia(
+create global temporary table centro_almacen(
   centro_id number(10,0) not null, 
-  es_farmacia as(0),
-  es_almacen as(1),
-  es_oficina as(0),
   clave varchar2(6) not null, 
   latitud number(15,4) not null, 
   longitud number(15,4) not null, 
@@ -72,7 +69,7 @@ create global temporary table centro_farmacia(
 /*
 CENTRO-OFICINA
 */
-create global temporary table centro_farmacia(
+create global temporary table centro_oficina(
   centro_id number(10,0) not null, 
   es_farmacia as(0),
   es_almacen as(1),
